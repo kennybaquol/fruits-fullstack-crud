@@ -69,6 +69,20 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Now Listening on port ${PORT}`));
 
+// index route
+app.get("/fruits", async (req, res) => {
+    // find all the fruits
+    const fruits = await Fruit.find({})
+        // render a template after they are found
+        .then((fruits) => {
+            res.render("fruits/index.liquid", { fruits });
+        })
+        // send error as json if they aren't
+        .catch((error) => {
+            res.json({ error });
+        });
+});
+
 app.get("/fruits/seed", (req, res) => {
     // array of starter fruits
     const startFruits = [
@@ -89,17 +103,20 @@ app.get("/fruits/seed", (req, res) => {
     });
 });
 
-// index route
-app.get("/fruits", async (req, res) => {
-    // find all the fruits
-    const fruits = await Fruit.find({})
-        // render a template after they are found
-        .then((fruits) => {
-            res.render("fruits/index.liquid", { fruits });
-        })
-        // send error as json if they aren't
-        .catch((error) => {
-            res.json({ error });
-        });
-});
-
+// show route
+app.get("/fruits/:id", (req, res) => {
+    // get the id from params
+    const id = req.params.id;
+  
+    // find the particular fruit from the database
+    Fruit.findById(id)
+      .then((fruit) => {
+        // render the template with the data from the database
+        res.render("fruits/show.liquid", { fruit });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json({ error });
+      });
+  });
+  
