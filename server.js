@@ -103,6 +103,11 @@ app.get("/fruits/seed", (req, res) => {
     });
 });
 
+// new route
+app.get("/fruits/new", (req, res) => {
+    res.render("fruits/new.liquid");
+  });
+  
 // show route
 app.get("/fruits/:id", (req, res) => {
     // get the id from params

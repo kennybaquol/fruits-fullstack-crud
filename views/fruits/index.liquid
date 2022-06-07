@@ -1,5 +1,8 @@
 {% layout "layout.liquid" %} {% block content %}
 <div>
+  <a href="/fruits/new">
+    <button>Create New Fruit</button>
+  </a>
   {% for fruit in fruits %}
   <article>
     <a href="/fruits/{{ fruit._id }}">
