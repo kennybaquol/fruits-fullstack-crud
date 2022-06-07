@@ -46,7 +46,7 @@ const Fruit = model("Fruit", fruitsSchema)
 /////////////////////////////////////////////////
 // Create our Express Application Object Bind Liquid Templating Engine
 /////////////////////////////////////////////////
-const app = require("liquid-express-views")(express(), {root: [path.resolve(__dirname, 'views/')]})
+const app = require("liquid-express-views")(express(), { root: [path.resolve(__dirname, 'views/')] })
 
 /////////////////////////////////////////////////////
 // Middleware
@@ -61,11 +61,45 @@ app.use(express.static("public")); // serve files from public statically
 ////////////////////////////////////////////
 app.get("/", (req, res) => {
     res.send("your server is running... better catch it.");
-  });
+});
 
 //////////////////////////////////////////////
 // Server Listener
 //////////////////////////////////////////////
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Now Listening on port ${PORT}`));
+
+app.get("/fruits/seed", (req, res) => {
+    // array of starter fruits
+    const startFruits = [
+        { name: "Orange", color: "orange", readyToEat: false },
+        { name: "Grape", color: "purple", readyToEat: false },
+        { name: "Banana", color: "orange", readyToEat: false },
+        { name: "Strawberry", color: "red", readyToEat: false },
+        { name: "Coconut", color: "brown", readyToEat: false },
+    ];
+
+    // Delete all fruits
+    Fruit.deleteMany({}).then((data) => {
+        // Seed Starter Fruits
+        Fruit.create(startFruits).then((data) => {
+            // send created fruits as response to confirm creation
+            res.json(data);
+        });
+    });
+});
+
+// index route
+app.get("/fruits", async (req, res) => {
+    // find all the fruits
+    const fruits = await Fruit.find({})
+        // render a template after they are found
+        .then((fruits) => {
+            res.render("fruits/index.liquid", { fruits });
+        })
+        // send error as json if they aren't
+        .catch((error) => {
+            res.json({ error });
+        });
+});
 
