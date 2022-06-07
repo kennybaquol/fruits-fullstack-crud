@@ -106,22 +106,74 @@ app.get("/fruits/seed", (req, res) => {
 // new route
 app.get("/fruits/new", (req, res) => {
     res.render("fruits/new.liquid");
-  });
-  
+});
+
 // show route
 app.get("/fruits/:id", (req, res) => {
     // get the id from params
     const id = req.params.id;
-  
+
     // find the particular fruit from the database
     Fruit.findById(id)
-      .then((fruit) => {
-        // render the template with the data from the database
-        res.render("fruits/show.liquid", { fruit });
-      })
-      .catch((error) => {
-        console.log(error);
-        res.json({ error });
-      });
-  });
-  
+        .then((fruit) => {
+            // render the template with the data from the database
+            res.render("fruits/show.liquid", { fruit });
+        })
+        .catch((error) => {
+            console.log(error);
+            res.json({ error });
+        });
+});
+
+// create route
+app.post("/fruits", (req, res) => {
+    // check if the readyToEat property should be true or false
+    req.body.readyToEat = req.body.readyToEat === "on" ? true : false;
+    // create the new fruit
+    Fruit.create(req.body)
+        .then((fruits) => {
+            // redirect user to index page if successfully created item
+            res.redirect("/fruits");
+        })
+        // send error as json
+        .catch((error) => {
+            console.log(error);
+            res.json({ error });
+        });
+});
+
+// edit route
+app.get("/fruits/:id/edit", (req, res) => {
+    // get the id from params
+    const id = req.params.id;
+    // get the fruit from the database
+    Fruit.findById(id)
+        .then((fruit) => {
+            // render edit page and send fruit data
+            res.render("fruits/edit.liquid", { fruit });
+        })
+        // send error as json
+        .catch((error) => {
+            console.log(error);
+            res.json({ error });
+        });
+});
+
+//update route
+app.put("/fruits/:id", (req, res) => {
+    // get the id from params
+    const id = req.params.id;
+    // check if the readyToEat property should be true or false
+    req.body.readyToEat = req.body.readyToEat === "on" ? true : false;
+    // update the fruit
+    Fruit.findByIdAndUpdate(id, req.body, { new: true })
+        .then((fruit) => {
+            // redirect to main page after updating
+            res.redirect("/fruits");
+        })
+        // send error as json
+        .catch((error) => {
+            console.log(error);
+            res.json({ error });
+        });
+});
